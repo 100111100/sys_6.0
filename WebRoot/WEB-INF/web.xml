@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
+  <display-name>sys_v6.0</display-name>
+  <welcome-file-list>
+    <welcome-file>common/login.jsp</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <servlet-name>InitServlet</servlet-name>
+    <servlet-class>com.zryx.common.InitServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  
+   <!-- 编码过滤器配置 -->
+	<filter>
+		<filter-name>characterEncoding</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>characterEncoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+  
+  
+  <!-- 登陆验证过滤器配置 -->
+     <filter>
+  <filter-name>LoginFilter</filter-name>
+	  <filter-class>com.zryx.common.LoginFilter</filter-class>
+  </filter>
+    <filter-mapping>
+	  <filter-name>LoginFilter</filter-name>
+	  <url-pattern>*.do</url-pattern>
+	  <url-pattern>*.jsp</url-pattern>
+  </filter-mapping>
+  
+  
+  <!-- 指定springioc的配置文件，默认从web根目录寻找配置文件，我们可以通过spring提供的classpath:前缀指定从类路径下寻找 -->
+
+	
+	<context-param><!--  这里是severlet中的全局变量-->
+	   <param-name>contextConfigLocation</param-name>
+	   <param-value>classpath:spring-context.xml</param-value>
+	</context-param>
+	<!--  配置监听器对Spring容器进行实例化 ，放在上下文-->
+	<listener>
+	    <listener-class>org.springframework.web.context.ContextLoaderListener
+	    </listener-class>
+	</listener>
+  
+  	<!-- 配置springmvc前置控制器 -->
+	<servlet>
+		<!-- 默认到WEB－INF下找spring-servlet.xml配置文件 -->
+		<servlet-name>spring</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<!-- 通过配置可以指定spring配置文件 -->
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring-servlet.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup><!-- 容器启动时加载 -->
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>		 
+  
+  
+  
+</web-app>

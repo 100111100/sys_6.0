@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TclassMapper">
+	
+	<resultMap id="rsTclass" type="com.zryx.entity.Tclass">
+		<result property="id" column="ID" />
+		<result property="name" column="NAME" />
+		<result property="charger" column="CHARGER" />
+		<result property="createDate" column="CREATE_DATE" />
+	</resultMap>
+	
+	<sql id="sql_column_items">
+		ID, 
+		NAME, 
+		CHARGER, 
+		CREATE_DATE
+	</sql>
+	
+	
+	<select id="findById" resultMap="rsTclass" parameterType="java.lang.Long">
+		select  <include refid="sql_column_items"/> from t_class
+		<where>
+			ID = #{id}
+		</where>
+	</select>
+	
+	
+	<select id="findList" resultMap="rsTclass">
+		select  <include refid="sql_column_items"/> from t_class
+		<where>
+			<if test="Tclass != null and Tclass.id != null ">  
+				and ID = #{Tclass.id}
+			</if>
+			<if test="Tclass != null and Tclass.name != null and Tclass.name != '' ">  
+				and NAME = #{Tclass.name}
+			</if>
+			<if test="Tclass != null and Tclass.charger != null and Tclass.charger != '' ">  
+				and CHARGER = #{Tclass.charger}
+			</if>
+			<if test="createDateBegin != null" >
+				<![CDATA[
+				and CREATE_DATE >= #{createDateBegin} 
+				]]> 
+			</if>
+			<if test="createDateEnd != null" > 
+				<![CDATA[
+				and CREATE_DATE <= #{createDateEnd}
+				]]> 
+			</if>
+		</where>
+		<if test="order != null and order != '' ">  
+			order by ${order} ${sort}
+		</if>
+	</select>
+	
+	<insert id="add" parameterType="com.zryx.entity.Tclass">
+		insert into t_class 
+			(
+			ID, 
+			NAME, 
+			CHARGER, 
+			CREATE_DATE
+			) 
+		values
+			(
+			seq_tclass.nextval, 
+			#{name, jdbcType=VARCHAR}, 
+			#{charger, jdbcType=VARCHAR}, 
+			sysdate
+			)
+	</insert>
+	
+	<update id="update" parameterType="com.zryx.entity.Tclass">
+		update t_class
+			 <set> 
+				<if test=" name != null ">NAME = #{name, jdbcType=VARCHAR}, </if>
+				<if test=" charger != null ">CHARGER = #{charger, jdbcType=VARCHAR}, </if>
+				<if test=" createDate != null ">CREATE_DATE = #{createDate, jdbcType=TIMESTAMP}, </if>
+				ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from t_class
+		<where>
+			ID = #{id}
+		</where>
+	</delete>
+	
+</mapper>

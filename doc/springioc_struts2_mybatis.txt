@@ -1,0 +1,6 @@
+springMVC(spring-servlet)负责接受页面数据，调用相应的模块，页面的跳转。mybatis与旗下的***mapper.xml，负责sql持久层的业务，
+spring(spring-context)application负责整个环境的搭建，比如说会话工厂，连接数据库，注入对象。
+
+
+
+

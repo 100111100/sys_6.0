@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CourseMapper">
+	
+	<resultMap id="rsCourse" type="com.zryx.entity.Course">
+		<result property="id" column="ID" />
+		<result property="name" column="NAME" />
+		<result property="createDate" column="CREATE_DATE" />
+		<result property="teacherId" column="TEACHER_ID" />
+		<result property="cyear" column="CYEAR" />
+		<result property="schTerm" column="SCH_TERM" />
+		<result property="credit" column="CREDIT" />
+		<result property="state" column="STATE" />
+	</resultMap>
+	
+	<sql id="sql_column_items">
+		ID, 
+		NAME, 
+		CREATE_DATE, 
+		TEACHER_ID, 
+		CYEAR, 
+		SCH_TERM, 
+		CREDIT, 
+		STATE
+	</sql>
+	
+	
+	<select id="findById" resultMap="rsCourse" parameterType="java.lang.Long">
+		select  <include refid="sql_column_items"/> from t_course
+		<where>
+			ID = #{id}
+		</where>
+	</select>
+	
+	
+	<select id="findList" resultMap="rsCourse">
+		SELECT a.*,b.name teacherName  FROM t_course a,t_teacher b  
+		<where>
+		    a.teacher_id=b.id 
+			<if test="Course != null and Course.teacherName != null  and Course.name != ''  ">  
+				and b.name = #{Course.teacherNames}
+			</if>
+			<if test="Course != null and Course.name != null and Course.name != '' ">  
+				and NAME = #{Course.name}
+			</if>
+			<if test="createDateBegin != null" >
+				<![CDATA[
+				and CREATE_DATE >= #{createDateBegin} 
+				]]> 
+			</if>
+			<if test="createDateEnd != null" > 
+				<![CDATA[
+				and CREATE_DATE <= #{createDateEnd}
+				]]> 
+			</if>
+			<if test="Course != null and Course.teacherId != null ">  
+				and TEACHER_ID = #{Course.teacherId}
+			</if>
+			<if test="Course != null and Course.cyear != null ">  
+				and CYEAR = #{Course.cyear}
+			</if>
+			<if test="Course != null and Course.schTerm != null ">  
+				and SCH_TERM = #{Course.schTerm}
+			</if>
+			<if test="Course != null and Course.credit != null ">  
+				and CREDIT = #{Course.credit}
+			</if>
+			<if test="Course != null and Course.state != null and Course.state != 0 ">  
+				and STATE = #{Course.state}
+			</if>
+		</where>
+		<if test="order != null and order != '' ">  
+			order by ${order} ${sort}
+		</if>
+	</select>
+	
+	<insert id="add" parameterType="com.zryx.entity.Course">
+		insert into t_course 
+			(
+			ID, 
+			NAME, 
+			CREATE_DATE, 
+			TEACHER_ID, 
+			CYEAR, 
+			SCH_TERM, 
+			CREDIT, 
+			STATE
+			) 
+		values
+			(
+			seq_course.nextval, 
+			#{name, jdbcType=VARCHAR}, 
+			sysdate, 
+			#{teacherId, jdbcType=NUMERIC}, 
+			#{cyear, jdbcType=NUMERIC}, 
+			#{schTerm, jdbcType=NUMERIC}, 
+			#{credit, jdbcType=NUMERIC}, 
+			#{state, jdbcType=NUMERIC}
+			)
+	</insert>
+	
+	<update id="update" parameterType="com.zryx.entity.Course">
+		update t_course
+			 <set> 
+				<if test=" name != null ">NAME = #{name, jdbcType=VARCHAR}, </if>
+				<if test=" createDate != null ">CREATE_DATE = #{createDate, jdbcType=TIMESTAMP}, </if>
+				<if test=" teacherId != null ">TEACHER_ID = #{teacherId, jdbcType=NUMERIC}, </if>
+				<if test=" cyear != null ">CYEAR = #{cyear, jdbcType=NUMERIC}, </if>
+				<if test=" schTerm != null ">SCH_TERM = #{schTerm, jdbcType=NUMERIC}, </if>
+				<if test=" credit != null ">CREDIT = #{credit, jdbcType=NUMERIC}, </if>
+				<if test=" state != null ">STATE = #{state, jdbcType=NUMERIC}, </if>
+				ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from t_course
+		<where>
+			ID = #{id}
+		</where>
+	</delete>
+	
+</mapper>

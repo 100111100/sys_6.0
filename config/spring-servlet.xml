@@ -1,0 +1,31 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd  
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+	
+	<!-- 自动扫描，只扫描controller这个包里面的注解 -->
+	<context:component-scan base-package="com.zryx.controller"/>
+	<!-- 配置驱动 -->
+	<mvc:default-servlet-handler/>
+	<!-- 注册注解处理器，提供对@RequestMapping, @Controller等注解的支持 -->
+	<!-- 在实际开发中一般都配置上 -->
+	<mvc:annotation-driven/>
+	<!-- 上传解析器(Id必须是multipartResolver) -->
+    <bean id="multipartResolver"  
+         class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+       <property name="defaultEncoding" value="UTF-8"/>
+       <!-- 可上传最大文件为5M -->
+       <property name="maxUploadSize" value="5242880"/>
+    </bean>   
+
+	<!-- 视图解析配置 -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+</beans>
+
+

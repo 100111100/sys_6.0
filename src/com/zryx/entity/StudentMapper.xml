@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StudentMapper">
+	
+	<resultMap id="rsStudent" type="com.zryx.entity.Student">
+		<result property="id" column="ID" />
+		<result property="name" column="NAME" />
+		<result property="sex" column="SEX" />
+		<result property="birthday" column="BIRTHDAY" />
+		<result property="snative" column="SNATIVE" />
+		<result property="classId" column="CLASS_ID" />
+		<result property="createDate" column="CREATE_DATE" />
+	</resultMap>
+	
+	<sql id="sql_column_items">
+		ID, 
+		NAME, 
+		SEX, 
+		BIRTHDAY, 
+		SNATIVE, 
+		CLASS_ID, 
+		CREATE_DATE
+	</sql>
+	
+	
+	<select id="findById" resultMap="rsStudent" parameterType="java.lang.Long">
+		select  <include refid="sql_column_items"/> from t_student
+		<where>
+			ID = #{id}
+		</where>
+	</select>
+	
+		
+	<select id="findList" resultMap="rsStudent">
+		select b.*,a.name class_name from t_class a, t_student b 
+		<where>
+		    a.id = b.class_id
+			<if test="Student != null and Student.className != null ">  
+				and a.name = #{Student.className}
+			</if>
+			<if test="Student != null and Student.name != null and Student.name != '' ">  
+				and b.NAME = #{Student.name}
+			</if>
+			<if test="Student != null and Student.sex != null and Student.sex != 0 ">  
+				and b.SEX = #{Student.sex}
+			</if>
+			<if test="birthdayBegin != null" >
+				<![CDATA[
+				and b.BIRTHDAY >= #{birthdayBegin} 
+				]]> 
+			</if>
+			<if test="birthdayEnd != null" > 
+				<![CDATA[
+				and b.BIRTHDAY <= #{birthdayEnd}
+				]]> 
+			</if>
+			<if test="Student != null and Student.snative != null and Student.snative != '' ">  
+				and b.SNATIVE = #{Student.snative}
+			</if>
+			<if test="Student != null and Student.classId != null and Student.classId != 0 ">  
+				and b.CLASS_ID = #{Student.classId}
+			</if>
+			<if test="createDateBegin != null" >
+				<![CDATA[
+				and b.CREATE_DATE >= #{createDateBegin} 
+				]]> 
+			</if>
+			<if test="createDateEnd != null" > 
+				<![CDATA[
+				and b.CREATE_DATE <= #{createDateEnd}
+				]]> 
+			</if>
+		</where>
+		<if test="order != null and order != '' ">  
+			order by ${order} ${sort}
+		</if>
+	</select>
+	
+		
+	
+	<insert id="add" parameterType="com.zryx.entity.Student">
+		insert into t_student 
+			(
+			ID, 
+			NAME, 
+			SEX, 
+			BIRTHDAY, 
+			SNATIVE, 
+			CLASS_ID, 
+			CREATE_DATE
+			) 
+		values
+			(
+			seq_student.nextval, 
+			#{name, jdbcType=VARCHAR}, 
+			#{sex, jdbcType=NUMERIC}, 
+			#{birthday, jdbcType=TIMESTAMP}, 
+			#{snative, jdbcType=VARCHAR}, 
+			#{classId, jdbcType=NUMERIC}, 
+			sysdate
+			)
+	</insert>
+	
+	<update id="update" parameterType="com.zryx.entity.Student">
+		update t_student
+			 <set> 
+				<if test=" name != null ">NAME = #{name, jdbcType=VARCHAR}, </if>
+				<if test=" sex != null and sex!= 0 ">SEX = #{sex, jdbcType=NUMERIC}, </if>
+				<if test=" birthday != null ">BIRTHDAY = #{birthday, jdbcType=TIMESTAMP}, </if>
+				<if test=" snative != null ">SNATIVE = #{snative, jdbcType=VARCHAR}, </if>
+				<if test=" classId != null ">CLASS_ID = #{classId, jdbcType=NUMERIC}, </if>
+				<if test=" createDate != null ">CREATE_DATE = #{createDate, jdbcType=TIMESTAMP}, </if>
+				ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from t_student
+		<where>
+			ID = #{id}
+		</where>
+	</delete>
+	
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MenuMapper">
+	
+	<resultMap id="rsMenu" type="com.zryx.entity.Menu">
+		<result property="id" column="ID" />
+		<result property="name" column="NAME" />
+		<result property="url" column="URL" />
+		<result property="pid" column="PID" />
+		<result property="mlevel" column="MLEVEL" />
+		<result property="createDate" column="CREATE_DATE" />
+	</resultMap>
+	
+	<sql id="sql_column_items">
+		ID, 
+		NAME, 
+		URL, 
+		PID, 
+		MLEVEL, 
+		CREATE_DATE
+	</sql>
+	
+	
+	<select id="findById" resultMap="rsMenu" parameterType="java.lang.Long">
+		select  <include refid="sql_column_items"/> from t_menu2
+		<where>
+			ID = #{id}
+		</where>
+	</select>
+	
+	
+	<select id="findList" resultMap="rsMenu">
+		select  <include refid="sql_column_items"/> from t_menu2
+		<where>
+			<if test="Menu != null and Menu.id != null ">  
+				and ID = #{Menu.id}
+			</if>
+			<if test="Menu != null and Menu.name != null and Menu.name != '' ">  
+				and NAME = #{Menu.name}
+			</if>
+			<if test="Menu != null and Menu.url != null and Menu.url != '' ">  
+				and URL = #{Menu.url}
+			</if>
+			<if test="Menu != null and Menu.pid != null and Menu.pid != 0 ">  
+				and PID = #{Menu.pid}
+			</if>
+			<if test="Menu != null and Menu.mlevel != null and Menu.mlevel != 0 ">  
+				and MLEVEL = #{Menu.mlevel}
+			</if>
+			<if test="createDateBegin != null" >
+				<![CDATA[
+				and CREATE_DATE >= #{createDateBegin} 
+				]]> 
+			</if>
+			<if test="createDateEnd != null" > 
+				<![CDATA[
+				and CREATE_DATE <= #{createDateEnd}
+				]]> 
+			</if>
+		</where>
+		<if test="order != null and order != '' ">  
+			order by ${order} ${sort}
+		</if>
+	</select>
+	
+	<insert id="add" parameterType="com.zryx.entity.Menu">
+		insert into t_menu2 
+			(
+			ID, 
+			NAME, 
+			URL, 
+			PID, 
+			MLEVEL, 
+			CREATE_DATE
+			) 
+		values
+			(
+			seq_menu.nextval, 
+			#{name, jdbcType=VARCHAR}, 
+			#{url, jdbcType=VARCHAR}, 
+			#{pid, jdbcType=NUMERIC}, 
+			#{mlevel, jdbcType=NUMERIC}, 
+			sysdate
+			)
+	</insert>
+	
+	<!-- 根据角色ID查询菜单 -->
+	<select id="getMenusByRoleId" resultMap="rsMenu" parameterType="java.lang.Long">
+		select a.* from t_menu2 a,t_role2menu b where a.id = b.menu_id and 
+		    b.role_id = #{id}
+	</select>
+	
+	<update id="update" parameterType="com.zryx.entity.Menu">
+		update t_menu2
+			 <set> 
+				<if test=" name != null ">NAME = #{name, jdbcType=VARCHAR}, </if>
+				<if test=" url != null ">URL = #{url, jdbcType=VARCHAR}, </if>
+				<if test=" pid != null and  pid != 0 ">PID = #{pid, jdbcType=NUMERIC}, </if>
+				<if test=" mlevel != null and mlevel != 0 ">MLEVEL = #{mlevel, jdbcType=NUMERIC}, </if>
+				<if test=" createDate != null ">CREATE_DATE = #{createDate, jdbcType=TIMESTAMP}, </if>
+				ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from t_menu2
+		<where>
+			ID = #{id}
+		</where>
+	</delete>
+	
+</mapper>

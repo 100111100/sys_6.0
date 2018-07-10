@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StuCourseMapper">
+	
+	<resultMap id="rsStuCourse" type="com.zryx.entity.StuCourse">
+		<result property="id" column="ID" />
+		<result property="studentId" column="STUDENT_ID" />
+		<result property="courseId" column="COURSE_ID" />
+		<result property="remark" column="REMARK" />
+		<result property="createDate" column="CREATE_DATE" />
+	</resultMap>
+	
+	<sql id="sql_column_items">
+		ID, 
+		STUDENT_ID, 
+		COURSE_ID, 
+		REMARK, 
+		CREATE_DATE
+	</sql>
+	
+	
+	<select id="findById" resultMap="rsStuCourse" parameterType="java.lang.Long">
+		select  <include refid="sql_column_items"/> from t_stu_Course
+		<where>
+			ID = #{id}
+		</where>
+	</select>
+	
+	
+	<select id="findList" resultMap="rsStuCourse">
+		SELECT a.*,b.name studentName,c.name courseName ,c.credit credit FROM t_stu_course a,t_student b, t_course c  
+		<where>
+		    a.STUDENT_ID=b.id AND a.COURSE_ID = c.ID
+			
+			<if test="StuCourse != null and StuCourse.studentName != null and StuCourse.studentName != '' ">  
+				and b.name = #{StuCourse.studentName}
+			</if>
+			<if test="StuCourse != null and StuCourse.courseName != null and StuCourse.courseName != ''  ">  
+				and c.name = #{StuCourse.courseName}
+			</if>
+			<if test="StuCourse != null and StuCourse.remark != null and StuCourse.remark != '' ">  
+				and REMARK = #{StuCourse.remark}
+			</if>
+			<if test="createDateBegin != null" >
+				<![CDATA[
+				and CREATE_DATE >= #{createDateBegin} 
+				]]> 
+			</if>
+			<if test="createDateEnd != null" > 
+				<![CDATA[
+				and CREATE_DATE <= #{createDateEnd}
+				]]> 
+			</if>
+		</where>
+		<if test="order != null and order != '' ">  
+			order by ${order} ${sort}
+		</if>
+	</select>
+	
+	<insert id="add" parameterType="com.zryx.entity.StuCourse">
+		insert into t_stu_Course 
+			(
+			ID, 
+			STUDENT_ID, 
+			COURSE_ID, 
+			REMARK, 
+			CREATE_DATE
+			) 
+		values
+			(
+			seq_stu_Course.nextval, 
+			#{studentId, jdbcType=NUMERIC}, 
+			#{courseId, jdbcType=NUMERIC}, 
+			#{remark, jdbcType=VARCHAR}, 
+			sysdate
+			)
+	</insert>
+	
+	<update id="update" parameterType="com.zryx.entity.StuCourse">
+		update t_stu_Course
+			 <set> 
+				<if test=" studentId != null ">STUDENT_ID = #{studentId, jdbcType=NUMERIC}, </if>
+				<if test=" courseId != null ">COURSE_ID = #{courseId, jdbcType=NUMERIC}, </if>
+				<if test=" remark != null ">REMARK = #{remark, jdbcType=VARCHAR}, </if>
+				<if test=" createDate != null ">CREATE_DATE = #{createDate, jdbcType=TIMESTAMP}, </if>
+				ID = #{id}
+			<where>
+				ID = #{id}
+			</where>
+		</set>
+	</update>
+	
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from t_stu_Course
+		<where>
+			ID = #{id}
+		</where>
+	</delete>
+	
+</mapper>
