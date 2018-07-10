@@ -11,7 +11,7 @@
       if('123'==prompt('请输入管理员密码')){
          $("#stack").show();
       }else{
-         alert("密码有误");
+        测试修改
       }
    }
 </script>
